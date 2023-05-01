@@ -1,0 +1,32 @@
+name: 刷步数
+
+on:
+  schedule:
+    - cron: '0 0 0/6 * * ? *'
+  watch:
+    types: started
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout codes
+        uses: actions/checkout@v3
+      - name: Update system and install zsh
+        run: |
+          sudo -E apt-get -qq update
+          sudo -E apt-get install zsh -y
+          
+      - name: 初始化Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: 开始
+        run: |
+          pip3 install requests
+          user='${{ secrets.USER }}'
+          passwd='${{ secrets.PWD }}' 
+          sckey='${{ secrets.SCKEY }}'
+          python3 githubRun.py ${user} ${passwd} ${sckey}
