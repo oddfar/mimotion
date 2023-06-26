@@ -2,7 +2,8 @@ name: 刷步数
 
 on:
   schedule:
-    - cron: 0 4,10,14 * * *
+   # 每天国际时间 2点 5点 7点 10点 14点 执行任务，对应中国北京时间10点 13点 15点 18点 22点
+    - cron: 0 2,5,7,10,14 * * *
   watch:
     types: started
   workflow_dispatch:
