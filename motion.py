@@ -92,33 +92,36 @@ def getLoginToken(code, is_phone):
         }
 
     r2 = requests.post(url, data=data).json()
-    login_token = r2["token_info"]["login_token"]
-    print("login_token获取成功！")
-    print(login_token)
+    # login_token = r2["token_info"]["login_token"]
+    # print("login_token获取成功！")
+    # print(login_token)
     userid = r2["token_info"]["user_id"]
     print("userid获取成功！")
     print(userid)
-
-    return login_token, userid
-
-
-def getAppToken(login_token):
-    r"""3、获取app_token
-
-    :param login_token: login_token
-    :return: app_token
-    """
-
-    url = f"https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com%2Capi-mifit.huami.com%2Capp-analytics.huami.com&login_token={login_token}"
-    response = requests.get(url).json()
-    app_token = response['token_info']['app_token']
+    app_token = r2['token_info']['app_token']
     print("app_token获取成功！")
     print(app_token)
-    return app_token
+    
+    return userid, app_token
+
+
+# def getAppToken(login_token):
+#     r"""3、获取app_token
+# 
+#     :param login_token: login_token
+#     :return: app_token
+#     """
+# 
+#     url = f"https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com%2Capi-mifit.huami.com%2Capp-analytics.huami.# com&login_token={login_token}"
+#     response = requests.get(url).json()
+#     app_token = response['token_info']['app_token']
+#     print("app_token获取成功！")
+#     print(app_token)
+#     return app_token
 
 
 def brushStep(app_token, user_id, step):
-    r"""4、刷步数
+    r"""3、刷步数
 
     :param app_token: login_token
     :param user_id: 用户id
@@ -176,15 +179,20 @@ def main(_user, _password, _step_min, _step_max):
     if code == 0:
         return "登录失败"
     # 获取login_token
-    login_token, userid = getLoginToken(code, is_phone)
+    userid, app_token= getLoginToken(code, is_phone)
 
-    app_token = getAppToken(login_token)
+#     app_token = getAppToken(login_token)
     # 刷步数
-    brush, message = brushStep(app_token, userid, step)
+    # brush, 
+    message = brushStep(app_token, userid, step)
     # 根据服务器时间设置，如果你是在github执行，时间为UTC时间，即北京时间-8
     time_bj = datetime.datetime.today() + datetime.timedelta(hours=8)
     now = time_bj.strftime("%Y-%m-%d %H:%M:%S")
-    result = f"[{now}]\n账号：{user[:3]}****{user[7:]}\n修改步数（{step}）[" + message + "]\n"
+    result = f"""
+    日期：{now}
+    账号：{user}
+    修改步数为：{step}
+    结果为：{message[1]}"""
     print(result)
     return result
 
