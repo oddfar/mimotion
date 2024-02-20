@@ -55,11 +55,11 @@ def loginGetCode(user, password):
 
 
 def getLoginToken(code, is_phone):
-    r"""2、获取login_token
+    r"""2、获取uerid 和 app_token
 
     :param code: code
     :param is_phone: 是否手机号
-    :return: login_token, userid
+    :return: app_token, userid
     """
 
     url = "https://account.huami.com/v2/client/login"
@@ -167,11 +167,13 @@ def pushMessage(token, title, message):
     res = requests.get(url).json()
 
 
-def main(_user, _password, _step_min, _step_max):
-    user = str(_user)
-    password = str(_password)
-    step = str(random.randint(_step_min, _step_max))
-    print("已设置为随机步数:" + step)
+def main(account):
+    min_steps = account.get("min", DEFAULT_MIN)
+    max_steps = account.get("max", DEFAULT_MAX)
+    user = str(account.get("user"))
+    password = str(account.get("password"))
+    step = str(random.randint(min_steps, max_steps))
+    print(f"已设置为随机步数: {step}")
     if user == '' or password == '':
         return "请正确填写用户名或密码"
     # 获取code
@@ -196,9 +198,19 @@ def main(_user, _password, _step_min, _step_max):
     print(result)
     return result
 
-
 if __name__ == '__main__':
-    ##刷步数
-    res = main("xxxxxx@xx.com", "123456", 1000, 2000)
+    # 设定步数默认值
+    DEFAULT_MIN = 4000
+    DEFAULT_MAX = 6000
+    # 设定账号, 按示例格式增加，可以单独设定步数范围。
+    accounts = [
+    {"user": "xxxxxx@123.com", "password": "123456", "min": 6000, "max": 8000}, 
+    {"user": "xxxxxx@xx.com", "password": "654321"}
+    ]
+    # 开始逐个账号刷步数
+    for account in accounts:
+        res = main(account)
+        print('-' * 20)
+    # res = main("xxxxxx@xx.com", "123456", 1000, 2000)
     #推送消息
-    pushMessage("pushplus的token", "刷步接口调用", res)
+        pushMessage("pushplus的token", "刷步接口调用", res)
