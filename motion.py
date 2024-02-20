@@ -183,7 +183,7 @@ def main(account):
     # 获取login_token
     userid, app_token= getLoginToken(code, is_phone)
 
-#     app_token = getAppToken(login_token)
+    # app_token = getAppToken(login_token)
     # 刷步数
     # brush, 
     message = brushStep(app_token, userid, step)

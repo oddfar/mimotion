@@ -100,11 +100,11 @@ function loginGetCode($user, $password)
 }
 
 /**
- * 2、获取login_token和user_id
+ * 2、获取app_token和user_id
  * @param $code
  * code
  * @return object
- * token_info对象，里面成员有login_token和user_id
+ * token_info对象，里面成员有app_token和user_id
  */
 function getLoginToken($code)
 {
@@ -151,35 +151,34 @@ function getLoginToken($code)
  * 3、获取app_token
  * @param $login_token
  * @return string
- */
-function getAppToken($login_token)
-{
-
-    $curl = curl_init();
-
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com,api-mifit.huami.com,app-analytics.huami.com&login_token=" . $login_token,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-    ]);
-
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
-
-    curl_close($curl);
-
-    if ($err) {
-        return "";
-    } else {
-        $res = json_decode($response);
-        return $res->token_info->app_token;
-    }
-}
-
+ *function getAppToken($login_token)
+ *{
+ *
+ *    $curl = curl_init();
+ *
+ *    curl_setopt_array($curl, [
+ *        CURLOPT_URL => "https://account-cn.huami.com/v1/client/app_tokens?app_name=com.xiaomi.hm.health&dn=api-user.huami.com,api-mifit.huami.com,app-analytics. *huami.com&login_token=" . $login_token,
+ *        CURLOPT_RETURNTRANSFER => true,
+ *        CURLOPT_ENCODING => "",
+ *        CURLOPT_MAXREDIRS => 10,
+ *        CURLOPT_TIMEOUT => 30,
+ *        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+ *        CURLOPT_CUSTOMREQUEST => "GET",
+ *    ]);
+ *
+ *    $response = curl_exec($curl);
+ *    $err = curl_error($curl);
+ *
+ *    curl_close($curl);
+ *
+ *    if ($err) {
+ *        return "";
+ *    } else {
+ *        $res = json_decode($response);
+ *        return $res->token_info->app_token;
+ *    }
+ *}
+*/
 /**
  * 刷步数
  * @param $app_token
@@ -239,10 +238,11 @@ function main($user, $password, $step)
     }
     $token_info = getLoginToken($code);
     //获取login_token
-    $login_token = $token_info->login_token;
+    //$login_token = $token_info->login_token; 已无需获取login_token
     $user_id = $token_info->user_id;
+    $app_token = $token_info->app_token;
     //获取app_token
-    $app_token = getAppToken($login_token);
+    //$app_token = getAppToken($login_token); 此行代码已弃用
     //刷步数
     $res = brushStep($app_token, $user_id, $step);
     return $res;
@@ -266,4 +266,3 @@ $s = main($user, $password, $step);
 $now = date('Y-m-d h:i:s', time());
 $meg = "[$now]\n账号：" . substr("$user", 0, 3) . "****" . substr("$user", 7) . "\n修改步数($step)[$s]";
 echo $meg;
-
